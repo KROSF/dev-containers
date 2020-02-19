@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
+ARG PHP_CS_FIXER_VERSION=2.16.1
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 # Configure apt and install packages
@@ -12,6 +13,9 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
     # install git iproute2, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git openssh-client less iproute2 procps iproute2 lsb-release zip unzip \
+    ## Intall php-cs-fixer
+    && curl -L https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v$PHP_CS_FIXER_VERSION/php-cs-fixer.phar > /usr/local/bin/php-cs-fixer \
+    && chmod +x /usr/local/bin/php-cs-fixer \
     #
     # Install xdebug
     && yes | pecl install xdebug \
@@ -38,7 +42,8 @@ RUN apt-get update \
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/cache/apk/* /var/tmp/* /tmp/*
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
