@@ -31,6 +31,9 @@ RUN apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME\
     && chmod 0440 /etc/sudoers.d/$USERNAME \
+    # Preserve installed extensions
+    && mkdir -p /home/$USERNAME/.vscode-server/extensions \
+    && chown -R $USERNAME /home/$USERNAME/.vscode-server \
     #
     # Clean up
     && apt-get autoremove -y \
